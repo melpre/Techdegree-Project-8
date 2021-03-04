@@ -1,13 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/book');
 
-var app = express();
+// import Sequelize instance (access to all Sequelize methods and functionality)
+const sequelize = require('./models');
+
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,6 +21,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// connect to database with logged message
+async function connectDB(sequelize) {
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync();
+        console.log('Connection has been established successfully');
+    } catch (error) {
+        console.error('Unable to connect to the database');
+    };
+};
+
+connectDB(sequelize);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
