@@ -3,11 +3,14 @@ extends layout
 block content
 h1 New Book
 form
+  //- Validation elements: if there is an error, show, otherwise hide
   //- notifies user of errors in form
-  h2.error Oooops!
-  ul.error
-    li Author is required
-    li Name is required
+  if(errors)
+    h2.errors Oooops!
+    ul.errors
+      each error in errors 
+      li
+        =error.message 
   //-
   p
     label(for='title') Title

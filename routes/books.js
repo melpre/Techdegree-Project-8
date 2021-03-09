@@ -5,12 +5,12 @@ const Book = require('../models').Book;
 /* GET books listing. */
 router.get('/books', async (req, res) => {
   const books = await Book.findAll();
-  res.render('index', { books });
+  res.render('index', { books, title: "Books" });
 });
 
 /* Create new book form */
 router.get('/books/new', (req, res) => {
-  res.render('new-book');
+  res.render('new-book', { title: "New Book" });
 });
 
 /* POST new book */
@@ -18,16 +18,17 @@ router.post('/books/new', async (req, res) => {
   let book;
   try{
     book = await Book.create(req.body);
-    res.redirect('/books/' + book.id);
+    res.redirect('/books');
   } catch (error) {
     if (error.name === "SequelizeValidationError") { //error check
-      article = await Book.build(req.body);
+      book = await Book.build(req.body);
       res.render('/books/new', { book, errors: error.errors, title: 'New Book' });
-    } else {
-      res.status(500).send(error); //not sure this is right
-    }
+    } 
+    // } else {
+    //   res.status(500).send(error); //not sure this is right
+    // }
   }
-})
+});
 
 /* GET individual book */
 router.get('/books/:id', async (req, res) => {
@@ -37,7 +38,7 @@ router.get('/books/:id', async (req, res) => {
   } else {
     res.sendStatus(404);
   }
-})
+});
 
 /* Edit individual book */
 router.post('/books/:id', async (req, res) => {
