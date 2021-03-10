@@ -2,19 +2,32 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models').Book;
 
+// Function that handles rejected promises returned from DB.
+function asyncHandler(cb){
+  return async(req, res, next) => {
+    try {
+      await cb(req, res, next)
+    } catch(error){
+      // Forward error to the global error handler
+      // next(error);
+      res.status(500).send(error);
+    }
+  }
+};
+
 /* GET books listing. */
-router.get('/books', async (req, res) => {
+router.get('/books', asyncHandler(async (req, res) => {
   const books = await Book.findAll();
   res.render('index', { books, title: "Books" });
-});
+}));
 
 /* Create new book form */
 router.get('/books/new', (req, res) => {
-  res.render('new-book', { title: "New Book" });
+  res.render('new-book', { book: {}, title: "New Book" });
 });
 
 /* POST new book */
-router.post('/books/new', async (req, res) => {
+router.post('/books/new', asyncHandler(async (req, res) => {
   let book;
   try{
     book = await Book.create(req.body);
@@ -28,20 +41,20 @@ router.post('/books/new', async (req, res) => {
     //   res.status(500).send(error); //not sure this is right
     // }
   }
-});
+}));
 
 /* GET individual book */
-router.get('/books/:id', async (req, res) => {
+router.get('/books/:id', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
   if(book) {
     res.render('book-detail', { book, title: book.title });
   } else {
     res.sendStatus(404);
   }
-});
+}));
 
 /* Edit individual book */
-router.post('/books/:id', async (req, res) => {
+router.post('/books/:id', asyncHandler(async (req, res) => {
   let book;
   try {
     book = await Book.findByPk(req.params.id);
@@ -60,10 +73,10 @@ router.post('/books/:id', async (req, res) => {
       res.status(500).send(error); //not sure this is right
     }
   }
-});
+}));
 
 /* Delete book */
-router.get('/books/:id/delete', async (req, res) => {
+router.get('/books/:id/delete', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
   if(book) {
     await book.destroy();
@@ -71,6 +84,6 @@ router.get('/books/:id/delete', async (req, res) => {
   } else {
     res.sendStatus(404); // not sure this is right
   }
-});
+}));
 
 module.exports = router;
