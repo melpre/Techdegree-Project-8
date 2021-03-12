@@ -51,12 +51,12 @@ const app = express();
   app.use('/books', booksRoutes);
 
   // error handlers
-    // 404
+    // catches 404
     app.use( (req, res, next) => {
-      // next(createError(404));
       const err = new Error();
       err.status = 404;
       if (err.status === 404) {
+        console.log(err);
         err.message = "Sorry! We couldn't find the page you were looking for."
         res.render('page-not-found', { err }) // pass {error} as 2nd parameter
       } else {
@@ -64,7 +64,8 @@ const app = express();
       }
     });
 
-    // DO NOT USE Global error handler
+    // DO NOT USE 
+    // Global error handler
     // app.use(function(err, req, res, next) {
     // set locals, only providing error in development
       // res.locals.message = err.message;
@@ -75,20 +76,13 @@ const app = express();
     //   res.render('error');
     // });
 
-    // global
+    // global error handler
     app.use((err, req, res, next) => {
-        if (err.status === 404) {
-            console.log('404 error handler called', err);
-            res.locals.error = err;
-            err.message = "Sorry! We couldn't find the page you were looking for.";
-            res.status(err.status).render('page-not-found', { err: err.message } );
-        } else {
-            res.locals.error = err;
-            err.status = 500;
-            err.message = "Sorry! There was an unexpected error on the server.";
-            console.log('Global error handler called', err);
-            res.status(err.status).render('error', { err: err.message } );
-        };
+      res.locals.error = err;
+      err.status = 500;
+      err.message = 'Sorry! There was an unexpected error on the server.';
+      console.log('Global error handler called', err);
+      res.status(err.status).render('page-not-found', { err });
     }); 
 
 
