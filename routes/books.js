@@ -7,10 +7,9 @@ function asyncHandler(cb){
   return async(req, res, next) => {
     try {
       await cb(req, res, next)
-    } catch(error){
+    } catch (error) {
       // Forward error to the global error handler
-      next(error);
-      // res.status(500).send(error);
+      res.status(500).send(error);
     }
   }
 };
@@ -48,7 +47,10 @@ router.get('/:id', asyncHandler(async (req, res) => {
   if(book) {
     res.render('update-book', { book, title: book.title, author: book.author, genre: book.genre, year: book.year });
   } else {
-    res.sendStatus(404);
+    const err = new Error();
+    err.status = 404;
+    err.message = "Sorry! We couldn't find the page you were looking for.";
+    res.render('page-not-found', { err });
   }
 }));
 
@@ -69,20 +71,19 @@ router.post('/:id', asyncHandler(async (req, res) => {
       book.id = req.params.id; //makes sure correct book gets updated
       res.render('update-book', { book, errors: error.errors, title: book.title, author: book.author, genre: book.genre, year: book.year });
     } else {
-      res.status(500).send(error); //not sure this is right
+      throw error;
     }
   }
 }));
 
 /* Delete book */
-// router.post('/:id/delete', asyncHandler(async (req, res) => {
 router.post('/:id/delete', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
   if(book) {
     await book.destroy();
     res.redirect('/');
   } else {
-    res.sendStatus(404); // not sure this is right
+    res.sendStatus(404);
   }
 }));
 
