@@ -3,7 +3,7 @@ extends layout
 block content
     h1 Update Book
 
-    include errors
+    include form-errors
     
     form(method='post', action='/books/' + book.id)
         p

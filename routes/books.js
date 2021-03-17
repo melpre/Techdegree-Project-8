@@ -47,10 +47,11 @@ router.get('/:id', asyncHandler(async (req, res) => {
   if(book) {
     res.render('update-book', { book, title: book.title, author: book.author, genre: book.genre, year: book.year });
   } else {
+    // res.sendStatus(404);
     const err = new Error();
     err.status = 404;
-    err.message = "Sorry! We couldn't find the page you were looking for.";
-    res.render('page-not-found', { err });
+    err.message = "Page not found.";
+    next(err); // why is this not sent to global error handler?
   }
 }));
 
@@ -63,7 +64,11 @@ router.post('/:id', asyncHandler(async (req, res) => {
       await book.update(req.body);
       res.redirect('/books/' + book.id);
     } else {
-      res.sendStatus(404);
+      // res.sendStatus(404);
+      const err = new Error();
+      err.status = 404;
+      err.message = "Page not found.";
+      next(err);
     }
   } catch (error) {
     if(error.name === 'SequelizeValidationError') {
@@ -83,7 +88,11 @@ router.post('/:id/delete', asyncHandler(async (req, res) => {
     await book.destroy();
     res.redirect('/');
   } else {
-    res.sendStatus(404);
+    // res.sendStatus(404);
+    const err = new Error();
+    err.status = 404;
+    err.message = "Page not found.";
+    next(err);
   }
 }));
 

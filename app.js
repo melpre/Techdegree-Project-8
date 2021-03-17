@@ -51,64 +51,27 @@ const app = express();
   app.use('/books', booksRoutes);
 
   // error handlers
-    // 404 handler to catch undefined or non-existent route requests
-    // app.use( (req, res, next) => {
-    //   const err = new Error();
-    //   err.status = 404;
-    //   if (err.status === 404) {
-    //     console.log(err);
-    //     err.message = "Sorry! We couldn't find the page you were looking for."
-    //     res.render('page-not-found', { err }) // pass {error} as 2nd parameter
-    //   } else {
-    //     next(err);
-    //   }
-    // });
+  // 404 handler to catch undefined or non-existent route requests
+  app.use((req, res, next) => {
+    const err = new Error();
+    err.status = 404;
+    next(err);
+  });
 
-    app.use( (req, res, next) => {
-      const err = new Error();
-      err.status = 404;
-      err.message = "Sorry! We couldn't find the page you were looking for."
-      // console.log('404 error handler called');
-      res.render('page-not-found', { err }) // pass {error} as 2nd parameter
-    });
-
-    // DO NOT USE 
-    // Global error handler
-    // app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-      // res.locals.message = err.message;
-      // res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-      // render the error page
-    //   res.status(err.status || 500);
-    //   res.render('error');
-    // });
-
-    // global error handler (middleware that catches errors in defined routes)
-    // app.use((err, req, res, next) => {
-    //   if (res.status === 404) {
-    //     err.message = "Sorry! We couldn't find the page you were looking for."
-    //     console.log('404 error handler called', err);
-    //     res.render('page-not-found', { err });
-    //   } else {
-    //     res.locals.error = err;
-    //     err.status = 500;
-    //     err.message = 'Sorry! There was an unexpected error on the server.';
-    //     console.log('Global error handler called', err);
-    //     res.status(err.status).render('page-not-found', { err });
-    //   }
-    // });
-    
-    app.use((err, req, res, next) => {
-      if (err) {
-        // console.log('Global error handler called', err);
-        if (err.status === 404) {
-          res.status(404).render('page-not-found', { err });
-        } else {
-          err.message = err.message || 'Sorry! There was an unexpected error on the server.';
-          res.status(err.status || 500).render('page-not-found', { err });
-        }
-      };
-    });
-
+  // global error handler (middleware that catches errors in defined routes)
+  app.use((err, req, res, next) => {
+    if (err.status === 404) {
+      console.log('404 error handler called', err);
+      res.locals.error = err;
+      err.message = "Sorry! We couldn't find the page you were looking for.";
+      res.status(err.status).render('page-not-found', { err });
+    } else {
+      console.log('Global error handler called', err);
+      res.locals.error = err;
+      err.status = 500;
+      err.message = "Sorry! There was an unexpected error on the server.";
+      res.status(err.status).render('server-error', { err });
+    };
+  });
+  
 module.exports = app;
