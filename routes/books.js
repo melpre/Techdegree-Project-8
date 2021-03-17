@@ -26,7 +26,7 @@ router.get('/new', (req, res) => {
 });
 
 /* POST new book */
-router.post('/', asyncHandler(async (req, res) => {
+router.post('/new', asyncHandler(async (req, res) => {
   let book;
   try{
     book = await Book.create(req.body);
@@ -42,7 +42,7 @@ router.post('/', asyncHandler(async (req, res) => {
 }));
 
 /* GET individual book */
-router.get('/:id', asyncHandler(async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
   if(book) {
     res.render('update-book', { book, title: book.title, author: book.author, genre: book.genre, year: book.year });

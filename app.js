@@ -1,3 +1,10 @@
+/******************************************
+Treehouse FSJS Techdegree:
+project 8 - SQL Library Manager
+by Melissa Preece
+I am aiming for the grade Meets Expectations.
+******************************************/
+
 /* Required Dependencies */
   const createError = require('http-errors');
   const express = require('express');
@@ -75,3 +82,4 @@ const app = express();
   });
   
 module.exports = app;
+
