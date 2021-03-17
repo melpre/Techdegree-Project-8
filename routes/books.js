@@ -51,7 +51,7 @@ router.get('/:id', asyncHandler(async (req, res, next) => {
     const err = new Error();
     err.status = 404;
     err.message = "Page not found.";
-    next(err); // why is this not sent to global error handler?
+    next(err);
   }
 }));
 
